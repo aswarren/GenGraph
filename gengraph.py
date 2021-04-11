@@ -1834,26 +1834,26 @@ def link_nodes(graph_obj, sequence_name, node_prefix='gn'):
 
 		if (node_1, node_2) in edges_obj:
 
-			print(node_1)
-			print(node_2)
+			#print(node_1)
+			#print(node_2)
 			#nx.write_graphml(graph_obj, 'problemG')
-			print(graph_obj.get_edge_data(node_1, node_2))
-			print(graph_obj.get_edge_data(node_1, node_2)[0]['ids'])
-			print(graph_obj.get_edge_data(node_1, node_2)[0]['ids'].split(','))
+			#print(graph_obj.get_edge_data(node_1, node_2))
+			#print(graph_obj.get_edge_data(node_1, node_2)['ids'])
+			#print(graph_obj.get_edge_data(node_1, node_2)['ids'].split(','))
 
-			if sequence_name not in graph_obj.get_edge_data(node_1, node_2)[0]['ids'].split(','):
+			if sequence_name not in graph_obj.get_edge_data(node_1, node_2)['ids'].split(','):
 
-				new_seq_list = graph_obj.get_edge_data(node_1, node_2)[0]['ids'] + ',' + sequence_name
+				new_seq_list = graph_obj.get_edge_data(node_1, node_2)['ids'] + ',' + sequence_name
+				graph_obj.edges[node_1,node_2]['ids']=new_seq_list
 
 			else:
 				print('Error found.')
 				quit()
 				new_seq_list = graph_obj.edges[node_1][node_2]['ids']
 
-			nx.set_edge_attributes(graph_obj, {'ids': new_seq_list})
 
 		else:
-			graph_obj.add_edge(node_1, node_2, ids=sequence_name)
+                    graph_obj.add_edges_from([(node_1, node_2, {"ids":sequence_name, "id":len(graph_obj.edges())})])
 
 		count += 1
 
@@ -2351,7 +2351,7 @@ def fasta_alignment_to_subnet(fasta_aln_file, true_start={}, node_prefix='X', or
 			orientation[a_isolate] = '+'
 
 	# Creating graph. May remove later
-	local_node_network = nx.MultiDiGraph()
+	local_node_network = nx.DiGraph()
 	local_node_network.graph['isolates'] = ','.join(all_isolate_list)
 
 	# Getting needed vals
@@ -2531,7 +2531,7 @@ def local_node_realign_new(in_graph, node_ID, seq_fasta_paths_dict):
 	logging.info('Fast local node realign: ' + node_ID)
 	logging.info(in_graph.nodes[node_ID])
 
-	in_graph = nx.MultiDiGraph(in_graph)
+	in_graph = nx.DiGraph(in_graph)
 
 	node_data_dict = in_graph.nodes[node_ID]
 
